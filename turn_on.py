@@ -1,5 +1,7 @@
 import discord
+import asyncio
 TOKEN = 'NDk5NjU0Njc5NjQzNDIyNzMx.DqD2fw.ikcwV55z8PnGvTLWiEno8Jbgi38'
+
 
 client = discord.Client()
 
@@ -15,9 +17,12 @@ async def on_message(message):
 
 @client.event
 async def on_ready():
+    await client.change_presence(game= discord.Game(name='Quidditch'))
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('------')
 
+
 client.run(TOKEN)
+
