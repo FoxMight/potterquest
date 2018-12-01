@@ -23,19 +23,25 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    # the following starts up the users profile
     if message.content.startswith('!start'):
         id = message.author.id
+        # this initializes their profile and distinguishes it based on their discord id
         db.profile.insert({"id" : id})
+        #creates message and sends
         msg = 'Profile set! Have fun! \nBe sure to choose a house with the !house command.'
         await client.send_message(message.channel, msg)
 
 
     if message.content.startswith('!hello'):
+        #creates message and sends
         msg = 'Hello {0.author.mention}'.format(message)
         await client.send_message(message.channel, msg)
 
     if message.content.startswith('!house'):
         id = message.author.id
+        # see whats in the message -> adjust the specific persons profile based  on it
+        # .update "updates" the profile $ must be used to keep old items
         if 'Gryffindor' in message.content:
             db.profile.update({"id" : id}, {"$set":{"house": "Gryffindor"}} )
             msg = 'Welcome to the Gryffindor house!'
