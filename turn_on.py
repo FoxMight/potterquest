@@ -54,16 +54,16 @@ async def on_message(message):
         if user is None:
             msg = "You did not initialize your profile! Please initialize your profile."
         else:
-            if 'Gryffindor' in message.content:
+            if 'gryffindor' in message.content.lower():
                 db.profile.update({"id" : id}, {"$set":{"house": "Gryffindor"}} )
                 msg = 'Welcome to the Gryffindor house!'
-            elif 'Hufflepuff' in message.content:
+            elif 'hufflepuff' in message.content.lower():
                 db.profile.update({"id" : id}, {"$set":{"house": "Hufflepuff"}} )
                 msg = 'Welcome to the Hufflepuff house!'
-            elif 'Slytherin' in message.content:
+            elif 'slytherin' in message.content.lower():
                 db.profile.update({"id" : id}, {"$set":{"house": "Slytherin"}} )
                 msg = 'Welcome to the Slytherin house!'
-            elif 'Ravenclaw' in message.content:
+            elif 'ravenclaw' in message.content.lower():
                 db.profile.update({"id" : id}, {"$set":{"house": "Ravenclaw"}} )
                 msg = 'Welcome to the Ravenclaw house!'
             else:
@@ -72,27 +72,45 @@ async def on_message(message):
 
     if message.content.startswith('!profile'):
         id = message.author.id
+        name = message.author.name
         user = db.profile.find_one({"id": id})
         if user is None:
             msg = "You did not initialize your profile! Please initialize your profile."
+            await client.send_message(message.channel, msg)
         else:
-            msg = '```'
+
             try:
                 user['house']
-                msg = msg +'This is your house: ' + user['house']
+                if(user['house'] == "Gryffindor"):
+                    embed = discord.Embed(title=name, description="", color=0xb00800)
+                    embed.add_field(name="House", value=user['house'], inline=False)
+                elif(user['house'] == "Ravenclaw"):
+                    embed = discord.Embed(title=name, description="", color=0x0d02d0)
+                    embed.add_field(name="House", value=user['house'], inline=False)
+                elif(user['house'] == "Hufflepuff" ):
+                    embed = discord.Embed(title=name, description="", color=0xfff45c)
+                    embed.add_field(name="House", value=user['house'], inline=False)
+                elif(user['house'] == "Slytherin"):
+                    embed = discord.Embed(title=name, description="", color=0x02a650)
+                    embed.add_field(name="House", value=user['house'], inline=False)
+                else:
+                    embed = discord.Embed(title=name, description="", color=0xffffff)
+                    embed.add_field(name="House", value="N/A", inline=False)
             except:
-                msg = msg +'You did not pick a house!'
+                embed = discord.Embed(title=name, description="", color=0xffffff)
+                embed.add_field(name="House", value="N/A", inline=False)
 
             try:
                 user['birthday']
-                msg = msg + "\nThis is your birthday: "+ user['birthday']
+                embed.add_field(name="Birthday", value=user['birthday'], inline=False)
             except:
-                msg = msg +'\nYou did not set a birthday!'
-            msg = msg + "\nYou have this many coins: " +str(user['coins']) + ' ```'
+                embed.add_field(name="Birthday", value="N/A", inline=False)
+            embed.add_field(name="Dragots", value=user['coins'], inline=False)
+            await client.send_message(message.channel, embed=embed)
             #try:
                 #user['bgpic']
                 #msg = msg + '\n'
-        await client.send_message(message.channel, msg)
+
 
 
     if message.content.startswith('!birthday'):
