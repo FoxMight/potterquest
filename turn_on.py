@@ -27,21 +27,40 @@ async def on_message(message):
 
     if message.author == client.user:
         return
-    
+
     # the following starts up the users profile
     if message.content.startswith('+help'):
         embed = discord.Embed(title="Help", description="The general list of commands", color=0xFFFFFF)
         embed.add_field(name="Basic Commands", value="+help \n +start (generates a profile)\n +shop  ", inline=False)
-        embed.add_field(name="Commands that require a profile", value="+profile \n +coins \n +birthday \n +house \n+setpfp ", inline=False)
+        embed.add_field(name="Commands that require a profile", value="+profile \n +coins \n +birthday \n +house \n+setpfp \n +nameUpdate", inline=False)
         await client.send_message(message.channel, embed=embed)
 
     if message.content.startswith('+start'):
         id = message.author.id
+        name = message.author.name
         # this initializes their profile and distinguishes it based on their discord id
-        db.profile.insert({"id" : id, "coins": 0})
+        db.profile.insert({"id" : id, "coins": 0, "username": name})
         #creates message and sends
         msg = 'Profile set! Have fun! \nBe sure to choose a house with the +house command.'
         await client.send_message(message.channel, msg)
+
+
+    '''
+        If a user sends "+nameUpdate" in the chat, the bot automatically updates the users
+        stored username to what it current is
+        It will not save anything if the user is not yet initialized in the database
+    '''
+    if message.content.startswith('+nameUpdate'):
+        name = message.author.name
+        id = message.author.id
+        user = db.profile.find_one({"id": id})
+        if user is None:
+            msg = "You did not initialize your profile! Please initialize your profile."
+        else:
+            msg = "Username set!"
+            db.profile.update({"id" : id}, {"$set":{"name": name}} )
+        await client.send_message(message.channel, msg)
+
 
     if message.content.startswith('+hello'):
         #creates message and sends
@@ -70,7 +89,6 @@ async def on_message(message):
 
 
     if message.content.startswith('+house'):
-        id = message.author.id
         # see whats in the message -> adjust the specific persons profile based  on it
         # .update "updates" the profile $ must be used to keep old items
         id = message.author.id
@@ -123,7 +141,7 @@ async def on_message(message):
             try:
                 user['house']
                 if(user['house'] == "Gryffindor"):
-                    embed = discord.Embed(title=name, description="", color=0xb00800)
+                    embed = discord.Embed(title=name, description="", color=0x0d02d0)
                     embed.add_field(name="House", value=user['house'], inline=False)
                     embed.set_thumbnail(url = "https://vignette.wikia.nocookie.net/gamekillers-rpgs/images/9/93/Gryffindor_Icon.png/revision/latest?cb=20160124110732")
                 elif(user['house'] == "Ravenclaw"):
@@ -144,6 +162,7 @@ async def on_message(message):
             except:
                 embed = discord.Embed(title=name, description="", color=0xffffff)
                 embed.add_field(name="House", value="N/A", inline=False)
+
 
             try:
                 user['birthday']
