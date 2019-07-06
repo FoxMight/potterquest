@@ -1,4 +1,6 @@
 import discord
+import sys
+import signal
 import os
 import asyncio
 import pymongo
@@ -6,15 +8,13 @@ import gridfs
 import secret
 from discord.ext import commands
 
-# logs onto mongodb's database, we are using the atlas client
-#dbclient = pymongo.MongoClient(secret.secret_key)
-#db = dbclient.bot
 
-#allows us in the future to insert actual images in the database:
-#fs = gridfs.GridFS(db)
+# a signal handler to handle shutdown of the bot from the terminal
+def signal_handler(sig, frame):
+    print('Closing bot...')
+    sys.exit(0)
 
 TOKEN = secret.secret_token
-
 
 # the following finds the first profile, adjust this to be better
 
@@ -70,12 +70,14 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
+if __name__ == '__main__':
+    # sets up signal to be recognized by user
+    signal.signal(signal.SIGINT, signal_handler)
+    #for every filaname in the cogs directory...
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            #load the cog
+            client.load_extension(f'cogs.{filename[:-3]}')
 
-#for every filaname in the cogs directory...
-for filename in os.listdir('./cogs'):
-    if filename.endswith('.py'):
-        #load the cog
-        client.load_extension(f'cogs.{filename[:-3]}')
 
-
-client.run(TOKEN)
+    client.run(TOKEN)
