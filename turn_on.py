@@ -16,8 +16,6 @@ def signal_handler(sig, frame):
 
 TOKEN = secret.secret_token
 
-# the following finds the first profile, adjust this to be better
-
 # initializing discord client
 client = commands.Bot(command_prefix='+')
 @client.command()
