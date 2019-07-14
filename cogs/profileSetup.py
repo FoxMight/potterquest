@@ -8,7 +8,6 @@ class profileSetup(commands.Cog):
     def __init__(self, client, databaseConnection):
         self.client = client
         self.dbConnection = databaseConnection
-        self.dbConnection.openDatabase()
 
     #   A command all users must use in order to start their database profile up
     #   It is possible to force them to immediately choose a house, but I decided

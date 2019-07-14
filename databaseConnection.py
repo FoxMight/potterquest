@@ -12,7 +12,6 @@ class databaseConnection:
         self.dbclient = pymongo.MongoClient(secret.secret_key)
         self.db = self.dbclient.bot
 
-        self.dbclient.close()
         # allows us in the future to insert actual images in the database:
         # self.fs = gridfs.GridFS(self.db)
 

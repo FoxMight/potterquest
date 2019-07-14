@@ -9,6 +9,14 @@ import secret
 from discord.ext import commands
 
 
+def prefix(bot, ctx):
+    print(ctx.guild.id) #the server id of the bot
+
+    #I suggest creating a now place to store server information instead of the "profile" collection the database usually
+    #uses try storing it in a collection named "server" and make each element distinguishable by server id
+
+    return "+" #change this to return the prefix for the specific server
+
 # a signal handler to handle shutdown of the bot from the terminal
 def signal_handler(sig, frame):
     print('Closing bot...')
@@ -17,7 +25,7 @@ def signal_handler(sig, frame):
 TOKEN = secret.secret_token
 
 # initializing discord client
-client = commands.Bot(command_prefix='+')
+client = commands.Bot(command_prefix=prefix)
 @client.command()
 async def ping(ctx):
     await ctx.send('Pong!')
