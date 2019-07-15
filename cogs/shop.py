@@ -4,11 +4,12 @@ from discord.ext import commands
 shop = ['Bear', 'Turtle']
 cost = [500, 500]
 
+
 class shopCommands(commands.Cog):
     @commands.command()
     async def shop(self, ctx):
         embed = discord.Embed(title="Ye old magic shop", description="", color=0xFFDF00)
-        #get the entire pet list
+        # get the entire pet list
         costs = ""
         items = ""
         i = 0
@@ -23,7 +24,6 @@ class shopCommands(commands.Cog):
         embed.add_field(name="Cost ", value=costs, inline=True)
 
         await ctx.send(embed=embed)
-
 
 
 def setup(client):

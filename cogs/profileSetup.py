@@ -15,9 +15,23 @@ class profileSetup(commands.Cog):
     @commands.command()
     async def start(self, ctx):
         id = ctx.author.id
+        serverOwnerId = ctx.guild.owner.id
+        print(serverOwnerId)
+        profile = self.dbConnection.profileFind({"id": id})
+        if profile is not None:
+            msg = 'You have already set your profile! You can not set it again.'
+            await ctx.send(msg)
+            return
         name = ctx.author.name
         # this initializes their profile and distinguishes it based on their discord id
-        self.dbConnection.profileInsert({"id": id, "coins": 0, "username": name})
+        if id == serverOwnerId:
+            # give them a special rank if they are a server owner
+            self.dbConnection.profileInsert({"id": id, "coins": 0, "username": name,
+                                             "rank": "Server Owner"})
+        else:
+            self.dbConnection.profileInsert({"id": id, "coins": 0, "username": name,
+                                             "rank": "Regular"})
+
         # creates message and sends
         msg = 'Profile set! Have fun! \nBe sure to choose a house with the +house command.'
         await ctx.send(msg)
@@ -34,7 +48,7 @@ class profileSetup(commands.Cog):
             msg = "You did not initialize your profile! Please initialize your profile."
         else:
             msg = "Username set!"
-            self.dbConnection.profileUpdate({"id": id}, {"$set": {"name": userName}})
+            self.dbConnection.profileUpdate({"id": id}, {"$set": {"username": userName}})
 
         await ctx.send(msg)
 
@@ -89,7 +103,7 @@ class profileSetup(commands.Cog):
             await ctx.send(msg)
         else:
             try:
-                name = user['name']
+                name = user['username']
             except:
                 pass
             try:

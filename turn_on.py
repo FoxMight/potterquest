@@ -5,12 +5,18 @@ import os
 import asyncio
 import pymongo
 import gridfs
+from discord.ext.commands import ExtensionAlreadyLoaded, ExtensionNotLoaded
+
 import secret
 from discord.ext import commands
+from cogs.management import ownerAdminTest
+from databaseConnection import databaseConnection
 
 
 def prefix(bot, ctx):
-    print(ctx.guild.id) #the server id of the bot
+
+    #the server id for where the bot is currently
+    #print(ctx.guild.id)
 
     #I suggest creating a now place to store server information instead of the "profile" collection the database usually
     #uses try storing it in a collection named "server" and make each element distinguishable by server id
@@ -26,6 +32,10 @@ TOKEN = secret.secret_token
 
 # initializing discord client
 client = commands.Bot(command_prefix=prefix)
+
+#initializing the database
+dbConnection = databaseConnection()
+
 @client.command()
 async def ping(ctx):
     await ctx.send('Pong!')
@@ -43,11 +53,42 @@ async def help(ctx):
 
 @client.command()
 async def load(ctx, extension):
-    client.load_extension(f'cogs.{extension}')
+    result = ownerAdminTest(ctx, dbConnection)
+
+    if result is False:
+        msg = "You do not have permission to load commands!"
+        await ctx.send(msg)
+        return
+    else:
+        msg = ""
+        try:
+            client.load_extension(f'cogs.{extension}')
+            msg = "Extension loaded successfully."
+        except ExtensionAlreadyLoaded:
+            msg = "Extension has already been loaded."
+
+        await ctx.send(msg)
+        return
+
+
 
 @client.command()
 async def unload(ctx, extension):
-    client.unload_extension(f'cogs.{extension}')
+    result = ownerAdminTest(ctx, dbConnection)
+    if result is False:
+        msg = "You do not have permission to load commands!"
+        await ctx.send(msg)
+        return
+    else:
+        msg = ""
+        try:
+            client.unload_extension(f'cogs.{extension}')
+            msg = "Extension unloaded successfully."
+        except ExtensionNotLoaded:
+            msg = "Extension has already been unloaded."
+
+        await ctx.send(msg)
+        return
 
 """
     Old fun commands that need to be re-implemented
