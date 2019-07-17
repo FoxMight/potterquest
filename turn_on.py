@@ -31,7 +31,7 @@ def signal_handler(sig, frame):
 TOKEN = secret.secret_token
 
 # initializing discord client
-client = commands.Bot(command_prefix=prefix)
+client = commands.Bot(command_prefix=prefix, case_insensitive=True)
 
 #initializing the database
 dbConnection = databaseConnection()

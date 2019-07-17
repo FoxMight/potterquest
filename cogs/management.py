@@ -97,6 +97,40 @@ class management(commands.Cog):
 
         await ctx.send(msg)
 
+    @commands.command()
+    async def makeVip(self, ctx, user: discord.User):
+        result = ownerAdminTest(ctx, self.dbConnection)
+        if result is False:
+            await ctx.send("You do not have permission to make someone a VIP.")
+            return
+        else:
+            userProfile = self.dbConnection.profileFind({"id": user.id})
+            if userProfile is None:
+                await ctx.send("The user did not set up their profile!")
+                return
+            # We must implement a check later on to make sure they are not making another server owner
+            # or admin a VIP, thereby decreasing their rank
+
+            # make them a VIP
+            self.dbConnection.profileUpdate({"id": user.id}, {"$set": {"rank": "VIP"}})
+            await ctx.send("Successfully made them a VIP.")
+            pass
+
+    @commands.command()
+    async def makeAdmin(self, ctx, user: discord.User):
+        result = ownerAdminTest(ctx, self.dbConnection)
+        if result is False:
+            await ctx.send("You do not have permission to make someone an Admin.")
+            return
+        else:
+            userProfile = self.dbConnection.profileFind({"id": user.id})
+            if userProfile is None:
+                await ctx.send("The user did not set up their profile!")
+                return
+            # make them an admin
+            self.dbConnection.profileUpdate({"id": user.id}, {"$set": {"rank": "Admin"}})
+            await ctx.send("Successfully made them an Admin")
+
 
 def setup(client):
     database_connection = databaseConnection()
