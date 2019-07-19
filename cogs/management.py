@@ -11,6 +11,9 @@ def ownerAdminTest(ctx, dbConnection):
     if user is None:
         return False
 
+    return ownerOrAdmin(user)
+
+def ownerOrAdmin(user):
     rank = user['rank']
     if rank is None:
         return False
@@ -18,6 +21,7 @@ def ownerAdminTest(ctx, dbConnection):
         return True
 
     return False
+
 
 
 class management(commands.Cog):
@@ -108,9 +112,10 @@ class management(commands.Cog):
             if userProfile is None:
                 await ctx.send("The user did not set up their profile!")
                 return
-            # We must implement a check later on to make sure they are not making another server owner
-            # or admin a VIP, thereby decreasing their rank
 
+            if ownerOrAdmin(userProfile):
+                await ctx.send("You can not demote a fellow server owner or admin!")
+                return
             # make them a VIP
             self.dbConnection.profileUpdate({"id": user.id}, {"$set": {"rank": "VIP"}})
             await ctx.send("Successfully made them a VIP.")
@@ -127,6 +132,11 @@ class management(commands.Cog):
             if userProfile is None:
                 await ctx.send("The user did not set up their profile!")
                 return
+
+            if ownerOrAdmin(userProfile):
+                await ctx.send("You can not make another Admin/Server Owener an Admin!")
+                return
+
             # make them an admin
             self.dbConnection.profileUpdate({"id": user.id}, {"$set": {"rank": "Admin"}})
             await ctx.send("Successfully made them an Admin")

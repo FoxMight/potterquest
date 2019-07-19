@@ -147,6 +147,14 @@ class profileSetup(commands.Cog):
             except:
                 embed.add_field(name="Pet", value="N/A", inline=False)
 
+
+            try:
+                user['rank']
+                embed.add_field(name="Rank", value=user['rank'], inline=False)
+            except:
+                embed.add_field(name="Rank", value="N/A", inline=False)
+
+
             embed.add_field(name="Knuts", value=user['coins'], inline=False)
 
             try:
