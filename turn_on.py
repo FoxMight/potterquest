@@ -62,7 +62,7 @@ async def load(ctx, extension):
     else:
         msg = ""
         try:
-            client.load_extension(f'cogs.{extension}')
+            client.load_extension(f"cogs.{extension}")
             msg = "Extension loaded successfully."
         except ExtensionAlreadyLoaded:
             msg = "Extension has already been loaded."
