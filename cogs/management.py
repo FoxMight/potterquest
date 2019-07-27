@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from databaseConnection import databaseConnection
+from .currency import giveMoney
 
 
 # a general ownerAdminTest any cog should be able to use as long
@@ -40,6 +41,11 @@ class management(commands.Cog):
             await ctx.send(msg)
             return
 
+        if num < 0:
+            msg = "Please do not give negative knuts."
+            await ctx.send(msg)
+            return
+
         result = ownerAdminTest(ctx, self.dbConnection)
         if result is False:
             msg = "You do not have permission to give money."
@@ -52,24 +58,26 @@ class management(commands.Cog):
             await ctx.send(msg)
             return
 
-        try:
-            userAmount = userProfile["coins"]
-            userAmount += num
-            print(userAmount)
-            self.dbConnection.profileUpdate({"id": user.id}, {"$set": {"coins": userAmount}})
+        if giveMoney(self.dbConnection, user.id, num):
             msg = "Gave " + userProfile["username"] + " " + str(num) + " knuts."
-        except:
+        else:
             msg = "The person does not have any coin section in their profile."
+
         await ctx.send(msg)
 
     @commands.command()
     async def take(self, ctx, amountToTake, user: discord.User):
-        print(amountToTake)
+
         num = 0
         try:
             num = int(amountToTake)
         except ValueError:
             msg = "Please provide a valid amount of money to give."
+            await ctx.send(msg)
+            return
+
+        if num < 0:
+            msg = "Please do not take negative knuts."
             await ctx.send(msg)
             return
 
@@ -86,6 +94,7 @@ class management(commands.Cog):
             return
 
         msg = ""
+
         try:
             userAmount = userProfile["coins"]
             userAmount -= num

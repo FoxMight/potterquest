@@ -6,9 +6,6 @@ import secret
 class databaseConnection:
 
     def __init__(self):
-        # python is yelling at me to define the objects in init, and I cant exactly define them
-        # as none and I cant really declare them so this is my work around
-
         self.dbclient = pymongo.MongoClient(secret.secret_key)
         self.db = self.dbclient.bot
 
