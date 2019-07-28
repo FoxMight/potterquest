@@ -12,16 +12,21 @@ from discord.ext import commands
 from cogs.management import ownerAdminTest
 from databaseConnection import databaseConnection
 
+#initializing the database
+dbConnection = databaseConnection()
 
 def prefix(bot, ctx):
+    global dbConnection
 
-    #the server id for where the bot is currently
-    #print(ctx.guild.id)
+    id = ctx.guild.id
+    server = dbConnection.serverFind({'id': id})
 
-    #I suggest creating a now place to store server information instead of the "profile" collection the database usually
-    #uses try storing it in a collection named "server" and make each element distinguishable by server id
+    if server is None:
+        dbConnection.serverInsert({'id': id, 'prefix': '+'})
+        server = dbConnection.serverFind({'id': id})
 
-    return "+" #change this to return the prefix for the specific server
+    p = server['prefix']
+    return p
 
 # a signal handler to handle shutdown of the bot from the terminal
 def signal_handler(sig, frame):
@@ -32,9 +37,6 @@ TOKEN = secret.secret_token
 
 # initializing discord client
 client = commands.Bot(command_prefix=prefix, case_insensitive=True)
-
-#initializing the database
-dbConnection = databaseConnection()
 
 @client.command()
 async def ping(ctx):

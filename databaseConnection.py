@@ -20,6 +20,7 @@ class databaseConnection:
     def closeDatabase(self):
         self.dbclient.close()
 
+    #profile
     def profileInsert(self, toInsert):
         self.db.profile.insert(toInsert)
 
@@ -28,3 +29,13 @@ class databaseConnection:
 
     def profileUpdate(self, updateCritera, change):
         self.db.profile.update(updateCritera, change)
+
+    #server
+    def serverInsert(self, toInsert):
+        self.db.server.insert(toInsert)
+
+    def serverFind(self, findCriteria):
+        return self.db.server.find_one(findCriteria)
+
+    def serverUpdate(self, updateCriteria, change):
+        self.db.server.update(updateCriteria, change)
