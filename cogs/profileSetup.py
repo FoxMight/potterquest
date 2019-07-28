@@ -15,21 +15,16 @@ class profileSetup(commands.Cog):
     @commands.command()
     async def start(self, ctx):
         id = ctx.author.id
-        serverOwnerId = ctx.guild.owner.id
-        print(serverOwnerId)
+
         profile = self.dbConnection.profileFind({"id": id})
         if profile is not None:
             msg = 'You have already set your profile! You can not set it again.'
             await ctx.send(msg)
             return
+
         name = ctx.author.name
         # this initializes their profile and distinguishes it based on their discord id
-        if id == serverOwnerId:
-            # give them a special rank if they are a server owner
-            self.dbConnection.profileInsert({"id": id, "coins": 0, "username": name,
-                                             "rank": "Server Owner"})
-        else:
-            self.dbConnection.profileInsert({"id": id, "coins": 0, "username": name,
+        self.dbConnection.profileInsert({"id": id, "coins": 0, "username": name,
                                              "rank": "Regular"})
 
         # creates message and sends

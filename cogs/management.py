@@ -8,21 +8,43 @@ from .currency import giveMoney
 # as they have a database connection
 def ownerAdminTest(ctx, dbConnection):
     id = ctx.author.id
+
+    # they are an admin of the server, let them pass
+    if ownerTest(ctx.guild.get_member(id)):
+        return True
+
     user = dbConnection.profileFind({"id": id})
+    return adminTest(user)
+
+
+'''
+Takes in a discord member
+Returns if they are an administrator of the current server or not
+'''
+
+
+def ownerTest(member):
+    return member.guild_permissions.administrator
+
+
+'''
+Takes in a user from the database
+Returns if they are a bot administrator or not
+'''
+
+
+def adminTest(user):
     if user is None:
         return False
-
-    return ownerOrAdmin(user)
-
-def ownerOrAdmin(user):
-    rank = user['rank']
-    if rank is None:
+    try:
+        rank = user['rank']
+    except KeyError:
         return False
-    if rank == "Server Owner" or rank == "Admin":
+
+    if rank == "Admin":
         return True
 
     return False
-
 
 
 class management(commands.Cog):
@@ -32,7 +54,7 @@ class management(commands.Cog):
         self.dbConnection = databaseConnection
 
     @commands.command()
-    async def give(self, ctx, amountToGive, user: discord.User):
+    async def give(self, ctx, user: discord.User, amountToGive):
         num = 0
         try:
             num = int(amountToGive)
@@ -66,13 +88,13 @@ class management(commands.Cog):
         await ctx.send(msg)
 
     @commands.command()
-    async def take(self, ctx, amountToTake, user: discord.User):
+    async def take(self, ctx, user: discord.User, amountToTake):
 
         num = 0
         try:
             num = int(amountToTake)
         except ValueError:
-            msg = "Please provide a valid amount of money to give."
+            msg = "Please provide a valid amount of money to take."
             await ctx.send(msg)
             return
 
@@ -122,9 +144,10 @@ class management(commands.Cog):
                 await ctx.send("The user did not set up their profile!")
                 return
 
-            if ownerOrAdmin(userProfile):
-                await ctx.send("You can not demote a fellow server owner or admin!")
+            if adminTest(userProfile):
+                await ctx.send("You can not demote a fellow admin!")
                 return
+
             # make them a VIP
             self.dbConnection.profileUpdate({"id": user.id}, {"$set": {"rank": "VIP"}})
             await ctx.send("Successfully made them a VIP.")
@@ -132,7 +155,10 @@ class management(commands.Cog):
 
     @commands.command()
     async def makeAdmin(self, ctx, user: discord.User):
-        result = ownerAdminTest(ctx, self.dbConnection)
+        current = self.dbConnection.profileFind({"id": ctx.author.id})
+        # only admins should be able to make others admins
+        result = adminTest(current)
+
         if result is False:
             await ctx.send("You do not have permission to make someone an Admin.")
             return
@@ -141,14 +167,10 @@ class management(commands.Cog):
             if userProfile is None:
                 await ctx.send("The user did not set up their profile!")
                 return
-
-            if ownerOrAdmin(userProfile):
-                await ctx.send("You can not make another Admin/Server Owener an Admin!")
-                return
-
-            # make them an admin
-            self.dbConnection.profileUpdate({"id": user.id}, {"$set": {"rank": "Admin"}})
-            await ctx.send("Successfully made them an Admin")
+            else:
+                self.dbConnection.profileUpdate({"id": user.id}, {"$set": {"rank": "Admin"}})
+                await ctx.send("Successfully made them an Admin.")
+                pass
 
 
 def setup(client):
