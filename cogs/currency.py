@@ -44,30 +44,25 @@ class currency(commands.Cog):
                 await ctx.send(msg)
                 return
             else:
-                # give them the money
-                if not giveMoney(self.dbConnection, id, 20):
-                    msg = "Please set up your profile first!"
-                else:
-                    msg = "Received 20 coins."
-
-                await ctx.send(msg)
-                return
+                return await self.giveDaily(ctx, currentTime, id)
 
         except:
             # this is their first time! give them the money
-            if not storeDateTime(self.dbConnection, id, currentTime):
-                msg = "Please set up your profile first!"
-                await ctx.send(msg)
-                return
+            return await self.giveDaily(ctx, currentTime, id)
 
-            if not giveMoney(self.dbConnection, id, 20):
-                # should theoretically never happen but should be prepared
-                msg = "Please set up your profile first!"
-            else:
-                msg = "Received 20 coins."
-
+    # function to give them the daily coins if their profile has been set up
+    async def giveDaily(self, ctx, currentTime, id):
+        if not storeDateTime(self.dbConnection, id, currentTime):
+            msg = "Please set up your profile first!"
             await ctx.send(msg)
             return
+        # give them the money
+        if not giveMoney(self.dbConnection, id, 20):
+            msg = "Please set up your profile first!"
+        else:
+            msg = "Received 20 knuts."
+        await ctx.send(msg)
+        return
 
 
 def setup(client):
