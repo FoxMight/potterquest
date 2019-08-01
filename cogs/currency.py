@@ -36,11 +36,12 @@ class currency(commands.Cog):
 
                 msg = "Please wait "
                 if h > 0:
-                    msg += str(int(h)) + " hour(s), "
-                if m > 0:
-                    msg += str(int(m)) + " minute(s) and "
-                if s > 0:
+                    msg += str(int(h)) + " hour(s), " + str(int(m)) + " minute(s) and " + str(int(s)) + " second(s)."
+                elif m > 0:
+                    msg += str(int(m)) + " minute(s) and " + str(int(s)) + " second(s)."
+                elif s > 0:
                     msg += str(int(s)) + " second(s)."
+
                 await ctx.send(msg)
                 return
             else:
