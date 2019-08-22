@@ -20,7 +20,7 @@ class databaseConnection:
     def closeDatabase(self):
         self.dbclient.close()
 
-    #profile
+    # profile
     def profileInsert(self, toInsert):
         self.db.profile.insert(toInsert)
 
@@ -30,7 +30,8 @@ class databaseConnection:
     def profileUpdate(self, updateCritera, change):
         self.db.profile.update(updateCritera, change)
 
-    #server
+
+    # server
     def serverInsert(self, toInsert):
         self.db.server.insert(toInsert)
 
@@ -39,3 +40,30 @@ class databaseConnection:
 
     def serverUpdate(self, updateCriteria, change):
         self.db.server.update(updateCriteria, change)
+
+    # pet-outlines
+    def getAllPetOutlines(self):
+        return self.db.pet_outlines.find({})
+
+    def getSpecificPetOutline(self, findCriteria):
+        return self.db.pet_outlines.find_one(findCriteria)
+
+
+    #user-pets
+    '''
+    For general information later, user pets will have multiple identifiers
+    
+    First, they will be identified via the user id who owns them
+    Next, they will be identified by their "pet number" in association to an array
+    '''
+    def getUserPet(self, findCriteria):
+        return self.db.user_pets.find_one(findCriteria)
+
+    def deleteUserPet(self, deleteCriteria):
+        return
+
+    def updateUserPet(self, updateCriteria, change):
+        self.db.user_pets.update(updateCriteria, change)
+
+    def insertUserPet(self, toInsert):
+        self.db.user_pets.insert(toInsert)

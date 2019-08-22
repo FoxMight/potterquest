@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 from databaseConnection import databaseConnection
+from pets import readSpecificPetOutline, pet, updatePetDetails, savePet, generatePet
+import copy
 
 
 class profileSetup(commands.Cog):
@@ -25,7 +27,8 @@ class profileSetup(commands.Cog):
         name = ctx.author.name
         # this initializes their profile and distinguishes it based on their discord id
         self.dbConnection.profileInsert({"id": id, "coins": 0, "username": name,
-                                             "rank": "Regular"})
+                                         "rank": "Regular", "petIDCount": -1, "currentPet": -1,
+                                         "pets": []})
 
         # creates message and sends
         msg = 'Profile set! Have fun! \nBe sure to choose a house with the +house command.'
@@ -69,18 +72,27 @@ class profileSetup(commands.Cog):
                     msg = "You are already in the Slytherin house."
             except:
                 if 'gryffindor' in houseName:
-                    self.dbConnection.profileUpdate({"id": id}, {"$set": {"house": "Gryffindor", "pet": "Lion"}})
+                    petName = "Lion"
+                    generatePet(self.dbConnection, petName, user, id)
+                    self.dbConnection.profileUpdate({"id": id}, {"$set": {"house": "Gryffindor"}})
                     msg = 'Welcome to the Gryffindor house!\nFor joining Gryffidor house you have received a Lion!'
+
                 elif 'hufflepuff' in houseName:
+                    petName = "Honey Badger"
+                    generatePet(self.dbConnection, petName, user, id)
                     self.dbConnection.profileUpdate({"id": id},
-                                                    {"$set": {"house": "Hufflepuff", "pet": "Honey Badger"}})
+                                                    {"$set": {"house": "Hufflepuff"}})
                     msg = 'Welcome to the Hufflepuff house!\nFor joining the Hufflepuff house you have received a ' \
                           'Honey Badger! '
                 elif 'slytherin' in houseName:
-                    self.dbConnection.profileUpdate({"id": id}, {"$set": {"house": "Slytherin", "pet": "Snake"}})
+                    petName = "Snake"
+                    generatePet(self.dbConnection, petName, user, id)
+                    self.dbConnection.profileUpdate({"id": id}, {"$set": {"house": "Slytherin"}})
                     msg = 'Welcome to the Slytherin house!\nFor joining the Slytherin house you have recieved a Snake!'
                 elif 'ravenclaw' in houseName:
-                    self.dbConnection.profileUpdate({"id": id}, {"$set": {"house": "Ravenclaw", "pet": "Eagle"}})
+                    petName = "Eagle"
+                    generatePet(self.dbConnection, petName, user, id)
+                    self.dbConnection.profileUpdate({"id": id}, {"$set": {"house": "Ravenclaw"}})
                     msg = 'Welcome to the Ravenclaw house!\nFor joining the Ravenclaw house you have recieved an Eagle!'
                 else:
                     msg = "That house doesn't exist."
@@ -103,22 +115,22 @@ class profileSetup(commands.Cog):
                 pass
             try:
                 user['house']
-                if (user['house'] == "Gryffindor"):
+                if user['house'] == "Gryffindor":
                     embed = discord.Embed(title=name, description="", color=0xff1300)
                     embed.add_field(name="House", value=user['house'], inline=False)
                     embed.set_thumbnail(
                         url="https://vignette.wikia.nocookie.net/gamekillers-rpgs/images/9/93/Gryffindor_Icon.png/revision/latest?cb=20160124110732")
-                elif (user['house'] == "Ravenclaw"):
+                elif user['house'] == "Ravenclaw":
                     embed = discord.Embed(title=name, description="", color=0x0d02d0)
                     embed.add_field(name="House", value=user['house'], inline=False)
                     embed.set_thumbnail(
                         url="https://vignette.wikia.nocookie.net/harrypotter/images/4/4e/RavenclawCrest.png/revision/latest/scale-to-width-down/350?cb=20161020182442")
-                elif (user['house'] == "Hufflepuff"):
+                elif user['house'] == "Hufflepuff":
                     embed = discord.Embed(title=name, description="", color=0xfff45c)
                     embed.add_field(name="House", value=user['house'], inline=False)
                     embed.set_thumbnail(
                         url="https://vignette.wikia.nocookie.net/harrypotter/images/0/06/Hufflepuff_ClearBG.png/revision/latest?cb=20161020182518")
-                elif (user['house'] == "Slytherin"):
+                elif user['house'] == "Slytherin":
                     embed = discord.Embed(title=name, description="", color=0x02a650)
                     embed.add_field(name="House", value=user['house'], inline=False)
                     embed.set_thumbnail(
@@ -142,13 +154,11 @@ class profileSetup(commands.Cog):
             except:
                 embed.add_field(name="Pet", value="N/A", inline=False)
 
-
             try:
                 user['rank']
                 embed.add_field(name="Rank", value=user['rank'], inline=False)
             except:
                 embed.add_field(name="Rank", value="N/A", inline=False)
-
 
             embed.add_field(name="Knuts", value=user['coins'], inline=False)
 
