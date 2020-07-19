@@ -2,7 +2,6 @@ import pymongo
 # import gridfs
 # import secret
 import os
-from boto.s3.connection import S3Connection
 
 
 # heroku environment variables
