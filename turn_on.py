@@ -6,14 +6,17 @@ import asyncio
 import pymongo
 import gridfs
 from discord.ext.commands import ExtensionAlreadyLoaded, ExtensionNotLoaded
+from boto.s3.connection import S3Connection
 
-import secret
+# import secret
 from discord.ext import commands
 from cogs.management import ownerAdminTest
 from databaseConnection import databaseConnection
 
-#initializing the database
+# initializing the database and heroku environment variables
 dbConnection = databaseConnection()
+TOKEN = os.environ['secret_token']
+
 
 def prefix(bot, ctx):
     global dbConnection
@@ -28,15 +31,16 @@ def prefix(bot, ctx):
     p = server['prefix']
     return p
 
+
 # a signal handler to handle shutdown of the bot from the terminal
 def signal_handler(sig, frame):
     print('Closing bot...')
     sys.exit(0)
 
-TOKEN = secret.secret_token
 
 # initializing discord client
 client = commands.Bot(command_prefix=prefix, case_insensitive=True)
+
 
 @client.command()
 async def ping(ctx):
@@ -44,6 +48,8 @@ async def ping(ctx):
 
 
 client.remove_command('help')
+
+
 @client.command()
 async def help(ctx):
     embed = discord.Embed(title="Help", description="The general list of commands", color=0xFFFFFF)
@@ -73,7 +79,6 @@ async def load(ctx, extension):
         return
 
 
-
 @client.command()
 async def unload(ctx, extension):
     result = ownerAdminTest(ctx, dbConnection)
@@ -91,6 +96,7 @@ async def unload(ctx, extension):
 
         await ctx.send(msg)
         return
+
 
 @client.command()
 async def reload(ctx, extension):
@@ -111,6 +117,7 @@ async def reload(ctx, extension):
         await ctx.send(msg)
         return
 
+
 """
     Old fun commands that need to be re-implemented
     if message.content.startswith('+cheese'):
@@ -129,7 +136,6 @@ async def reload(ctx, extension):
 """
 
 
-
 @client.event
 async def on_ready():
     await client.change_presence(activity=discord.Game('Quidditch'))
@@ -138,14 +144,14 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
+
 if __name__ == '__main__':
     # sets up signal to be recognized by user
     signal.signal(signal.SIGINT, signal_handler)
-    #for every filaname in the cogs directory...
+    # for every filaname in the cogs directory...
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
-            #load the cog
+            # load the cog
             client.load_extension(f'cogs.{filename[:-3]}')
-
 
     client.run(TOKEN)

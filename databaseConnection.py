@@ -1,12 +1,18 @@
 import pymongo
 # import gridfs
-import secret
+# import secret
+import os
+from boto.s3.connection import S3Connection
+
+
+# heroku environment variables
+KEY = os.environ['secret_key']
 
 
 class databaseConnection:
 
     def __init__(self):
-        self.dbclient = pymongo.MongoClient(secret.secret_key)
+        self.dbclient = pymongo.MongoClient(KEY)
         self.db = self.dbclient.bot
 
         # allows us in the future to insert actual images in the database:
@@ -14,7 +20,7 @@ class databaseConnection:
 
     def openDatabase(self):
         # logs onto mongodb's database, we are using the atlas client
-        self.dbclient = pymongo.MongoClient(secret.secret_key)
+        self.dbclient = pymongo.MongoClient(KEY)
         self.db = self.dbclient.bot
 
     def closeDatabase(self):
