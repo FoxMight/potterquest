@@ -1,5 +1,5 @@
-# potterquest
-Dive into Harry Potter universe, right on Discord!
+# Fox in a Box
+General Discord bot for utility and fun
 
 ##### Table of Contents
 * [Abstract](#Abstract)
@@ -10,7 +10,7 @@ Dive into Harry Potter universe, right on Discord!
   
  ## Abstract
  This bots main purpose is to serve as a general fun, utility bot
- for playing a harry potter like game directly inside of discords chat client!
+ for playing games directly inside of discords chat client!
  It allows users to create profiles, along with purchase items in shops with 
  coins they earn through various activities. There are also many other fun
  commands packed inside of which most users can see by using the bots help command!
