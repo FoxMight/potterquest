@@ -22,7 +22,7 @@ def prefix(bot, ctx):
     server = dbConnection.serverFind({'id': id})
 
     if server is None:
-        dbConnection.serverInsert({'id': id, 'prefix': '+'})
+        dbConnection.serverInsert({'id': id, 'prefix': 'fox '})
         server = dbConnection.serverFind({'id': id})
 
     p = server['prefix']
