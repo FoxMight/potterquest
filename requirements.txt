@@ -1,4 +1,4 @@
-git+https://github.com/Rapptz/discord.py@rewrite
+discord==1.0.1
 pymongo==3.8.0
 asyncio==3.4.3
 dnspython3==1.15.0
