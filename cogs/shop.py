@@ -5,7 +5,7 @@ from databaseConnection import databaseConnection
 import copy
 
 
-class shopCommands(commands.Cog):
+class shop(commands.Cog):
 
     def __init__(self, client, databaseConnection):
         self.client = client
@@ -25,7 +25,7 @@ class shopCommands(commands.Cog):
 
         for petObj in self.pets.values():
             items = items + petObj.name + "\n"
-            costs = costs + str(petObj.cost) + " knuts\n"
+            costs = costs + str(petObj.cost) + " berries\n"
             i += 1
 
         embed.add_field(name="Pets: \n", value="Look at our magical pets for sale!", inline=False)
@@ -84,4 +84,4 @@ class shopCommands(commands.Cog):
 
 def setup(client):
     database_connection = databaseConnection()
-    client.add_cog(shopCommands(client, database_connection))
+    client.add_cog(shop(client, database_connection))
