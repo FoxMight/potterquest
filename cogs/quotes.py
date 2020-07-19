@@ -1,8 +1,5 @@
-import discord
 from discord.ext import commands
-from pets import pet, readPetOutline, savePet, updatePetDetails
 from databaseConnection import databaseConnection
-import copy
 
 
 class quotes(commands.Cog):

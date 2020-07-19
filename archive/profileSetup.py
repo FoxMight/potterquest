@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
 from databaseConnection import databaseConnection
-from pets import readSpecificPetOutline, pet, updatePetDetails, savePet, generatePet
-import copy
+from archive.pets import generatePet
 
 
 class profileSetup(commands.Cog):

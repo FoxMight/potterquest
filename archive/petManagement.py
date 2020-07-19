@@ -1,5 +1,5 @@
 from databaseConnection import databaseConnection
-from pets import pet, readUserPet
+from archive.pets import readUserPet
 import discord
 from discord.ext import commands
 

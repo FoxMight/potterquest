@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from databaseConnection import databaseConnection
-from .currency import giveMoney
+from archive.currency import giveMoney
 
 
 # a general ownerAdminTest any cog should be able to use as long
