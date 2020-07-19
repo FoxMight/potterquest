@@ -35,6 +35,16 @@ General Discord bot for utility and fun
  Once you change the link, put the new link into secret.py within the quotes for "secret_key".
  Once you do that, you are all set to begin running!
  
+ ```Python
+# example of secret.py
+
+# to connect to the database, put your key between the quotes with the password filled in!
+secret_key = ""
+
+# to connect to the bot, put your token in the below quotes!
+secret_token = ""
+```
+ 
  ### Running
  Running the bot once everything is set up is easy, go to your terminal and run python3 turn_on.py. You should see the 
  bot turn on in any server you invited it to! You can also choose to run it from a text editor or IDE, simply choose 
