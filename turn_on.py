@@ -92,6 +92,25 @@ async def unload(ctx, extension):
         await ctx.send(msg)
         return
 
+@client.command()
+async def reload(ctx, extension):
+    result = ownerAdminTest(ctx, dbConnection)
+    if result is False:
+        msg = "You do not have permission to load commands!"
+        await ctx.send(msg)
+        return
+    else:
+        msg = ""
+        try:
+            client.unload_extension(f'cogs.{extension}')
+            client.load_extension(f"cogs.{extension}")
+            msg = "Extension reloaded successfully."
+        except ExtensionNotLoaded:
+            msg = "Extension has already been unloaded."
+
+        await ctx.send(msg)
+        return
+
 """
     Old fun commands that need to be re-implemented
     if message.content.startswith('+cheese'):
