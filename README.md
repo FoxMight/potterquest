@@ -1,5 +1,5 @@
-# potterquest
-Dive into Harry Potter universe, right on Discord!
+# Fox in a Box
+General Discord bot for utility and fun
 
 ##### Table of Contents
 * [Abstract](#Abstract)
@@ -10,7 +10,7 @@ Dive into Harry Potter universe, right on Discord!
   
  ## Abstract
  This bots main purpose is to serve as a general fun, utility bot
- for playing a harry potter like game directly inside of discords chat client!
+ for playing games directly inside of discords chat client!
  It allows users to create profiles, along with purchase items in shops with 
  coins they earn through various activities. There are also many other fun
  commands packed inside of which most users can see by using the bots help command!
@@ -34,6 +34,16 @@ Dive into Harry Potter universe, right on Discord!
  Also ensure that you have IP whitelisted yourself within your database so you do not get blocked out.
  Once you change the link, put the new link into secret.py within the quotes for "secret_key".
  Once you do that, you are all set to begin running!
+ 
+ ```Python
+# example of secret.py
+
+# to connect to the database, put your key between the quotes with the password filled in!
+secret_key = ""
+
+# to connect to the bot, put your token in the below quotes!
+secret_token = ""
+```
  
  ### Running
  Running the bot once everything is set up is easy, go to your terminal and run python3 turn_on.py. You should see the 

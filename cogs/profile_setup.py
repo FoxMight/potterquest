@@ -160,7 +160,7 @@ class profileSetup(commands.Cog):
             except:
                 embed.add_field(name="Rank", value="N/A", inline=False)
 
-            embed.add_field(name="Knuts", value=user['coins'], inline=False)
+            embed.add_field(name="Berries", value=user['coins'], inline=False)
 
             try:
                 user['picture']
@@ -200,14 +200,14 @@ class profileSetup(commands.Cog):
         await ctx.send(msg)
 
     @commands.command()
-    async def knuts(self, ctx):
+    async def berries(self, ctx):
         # lets get the users coins!
         id = ctx.author.id
         user = self.database_connection.profile_find({"id": id})
         if user is None:
             msg = "You did not initialize your profile! Please initialize your profile."
         else:
-            msg = 'You have ' + str(user['coins']) + ' knuts.'
+            msg = 'You have ' + str(user['coins']) + ' berries.'
         await ctx.send(msg)
 
 
