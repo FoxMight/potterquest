@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from databaseConnection import databaseConnection
+from database_connection import database_connection
 import copy
 
 
@@ -28,24 +28,24 @@ def savePet(dbConnection, pet):
         return False
 
     # first check if the pet already exists
-    petDoc = dbConnection.getUserPet({"userID": pet.userID, "petID": pet.petID})
+    petDoc = dbConnection.get_user_pet({"userID": pet.userID, "petID": pet.petID})
     if petDoc is None:
         # the pet has not been created yet
         # insert it as a new document
-        dbConnection.insertUserPet({"userID": pet.userID, "petID": pet.petID, "Type": pet.type,
+        dbConnection.insert_user_pet({"userID": pet.userID, "petID": pet.petID, "Type": pet.type,
                                     "Nickname": pet.name, "Picture": pet.picture, "Cost": pet.cost})
 
     else:
         # update the current pets information
-        dbConnection.updateUserPet({"userID": pet.userID, "petID": pet.petID},
-                                   {"userID": pet.userID, "petID": pet.petID, "Type": pet.type,
+        dbConnection.update_user_pet({"userID": pet.userID, "petID": pet.petID},
+                                     {"userID": pet.userID, "petID": pet.petID, "Type": pet.type,
                                     "Nickname": pet.name, "Picture": pet.picture, "Cost": pet.cost})
 
     return True
 
 
 def readPetOutline(dbConnection):
-    allPets = dbConnection.getAllPetOutlines()
+    allPets = dbConnection.get_all_pet_outlines()
     listOfPets = {}
     for petDoc in allPets:
         newPet = pet(petDoc["Type"], petDoc["Cost"], petDoc["Picture"])
@@ -53,9 +53,9 @@ def readPetOutline(dbConnection):
 
     return listOfPets
 
-def readUserPet(dbConnection, userID, petID):
+def read_user_pet(dbConnection, userID, petID):
 
-    petDoc = dbConnection.getUserPet({"userID": userID, "petID": petID})
+    petDoc = dbConnection.get_user_pet({"userID": userID, "petID": petID})
 
     if petDoc is None:
         return None
@@ -71,19 +71,19 @@ def updatePetDetails(dbConnection, userDoc, userID, usersPet):
     usersPet.userID = userID
     usersPet.petID = newPetID
     # update the users petIDCount and their pet array
-    dbConnection.profileUpdate({"id": userID}, {"$set": {"petIDCount": newPetID}})
+    dbConnection.profile_update({"id": userID}, {"$set": {"petIDCount": newPetID}})
     # and point their profile to that pet
-    dbConnection.profileUpdate({"id": userID}, {"$push": {"pets": newPetID}})
+    dbConnection.profile_update({"id": userID}, {"$push": {"pets": newPetID}})
 
 
-def generatePet(dbConnection, petName, userDoc, id):
+def generate_pet(dbConnection, petName, userDoc, id):
     petObj = readSpecificPetOutline(dbConnection, petName)
     usersPet = copy.copy(petObj)
     updatePetDetails(dbConnection, userDoc, id, usersPet)
     savePet(dbConnection, usersPet)
 
 def readSpecificPetOutline(dbConnection, name):
-    petDoc = dbConnection.getSpecificPetOutline({"Type": name})
+    petDoc = dbConnection.get_specific_pet_outline({"Type": name})
     newPet = pet(petDoc["Type"], petDoc["Cost"], petDoc["Picture"])
     return newPet
 

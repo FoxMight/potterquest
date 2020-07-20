@@ -1,20 +1,20 @@
-from databaseConnection import databaseConnection
-from pets import pet, readUserPet
+from database_connection import database_connection
+from pets import pet, read_user_pet
 import discord
 from discord.ext import commands
 
 
-class petCommands(commands.Cog):
-    def __init__(self, client, databaseConnection):
+class pet_commands(commands.Cog):
+    def __init__(self, client, inner_database_connection):
         self.client = client
-        self.dbConnection = databaseConnection
+        self.db_connection = inner_database_connection
 
     @commands.command()
     async def pet(self, ctx):
         # show the user their pet!
         id = ctx.author.id
         name = ctx.author.name
-        userDoc = self.dbConnection.profileFind({"id": id})
+        userDoc = self.db_connection.profile_find({"id": id})
         if userDoc is None:
             await ctx.send("Please set up your profile first!")
             return
@@ -23,7 +23,7 @@ class petCommands(commands.Cog):
         petID = userDoc["currentPet"]
 
         # now read the pet in
-        userPet = readUserPet(self.dbConnection, id, petID)
+        userPet = read_user_pet(self.db_connection, id, petID)
         userName = str(userDoc["username"])
         if userName.endswith("s"):
             titleOfPet = userName + "' " + "pet"
@@ -38,47 +38,47 @@ class petCommands(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def myPets(self, ctx):
+    async def my_pets(self, ctx):
 
         id = ctx.author.id
 
         # tell the user all their pet names, along with their corresponding ids
-        userDoc = self.dbConnection.profileFind({"id": id})
-        if userDoc is None:
+        user_doc = self.db_connection.profile_find({"id": id})
+        if user_doc is None:
             await ctx.send("Please set up your profile first!")
             return
 
-        userName = str(userDoc["username"])
-        if userName.endswith("s"):
-            titleOfPets = userName + "' " + "pets"
+        user_name = str(user_doc["username"])
+        if user_name.endswith("s"):
+            titleOfPets = user_name + "' " + "pets"
         else:
-            titleOfPets = userName + "'s " + "pets"
+            titleOfPets = user_name + "'s " + "pets"
 
         embed = discord.Embed(title=titleOfPets, description="", color=0xffffff)
         # parse through all of the users pets
 
         # get their name, types and ids
 
-        arrayOfPetIDs = userDoc["pets"]
-        idList = ""
-        typeList = ""
-        nameList = ""
+        array_of_petIDs = user_doc["pets"]
+        id_list = ""
+        type_list = ""
+        name_list = ""
 
-        for petID in arrayOfPetIDs:
-            idList = idList + str(petID) + "\n"
+        for petID in array_of_petIDs:
+            id_list = id_list + str(petID) + "\n"
 
             # create the corresponding pet object for this id
-            userPet = readUserPet(self.dbConnection, id, petID)
+            user_pet = read_user_pet(self.db_connection, id, petID)
 
             # now list its name, along with its type
-            typeList = typeList + str(userPet.type) + "\n"
-            nameList = nameList + str(userPet.name) + "\n"
+            type_list = type_list + str(user_pet.type) + "\n"
+            name_list = name_list + str(user_pet.name) + "\n"
 
         # now add it to the embed
 
-        embed.add_field(name="Name ", value=nameList, inline=True)
-        embed.add_field(name="Type ", value=typeList, inline=True)
-        embed.add_field(name="ID ", value=idList, inline=True)
+        embed.add_field(name="Name ", value=name_list, inline=True)
+        embed.add_field(name="Type ", value=type_list, inline=True)
+        embed.add_field(name="ID ", value=id_list, inline=True)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -92,22 +92,21 @@ class petCommands(commands.Cog):
             return
 
         # first see if they have that pet id
-        userDoc = self.dbConnection.profileFind({"id": id})
-        if userDoc is None:
+        user_doc = self.db_connection.profile_find({"id": id})
+        if user_doc is None:
             await ctx.send("Please set up your profile first!")
             return
-        arrayOfPetIDs = userDoc["pets"]
+        array_of_petIDs = user_doc["pets"]
 
-        if not (num in arrayOfPetIDs):
+        if not (num in array_of_petIDs):
             await ctx.send("Please provide a valid pet ID.")
             return
 
-        petObj = readUserPet(self.dbConnection, id, int(idToSwitch))
+        pet_obj = read_user_pet(self.db_connection, id, int(idToSwitch))
         # now try to switch their current petID
-        self.dbConnection.profileUpdate({"id": id}, {"$set": {"currentPet": int(idToSwitch), "pet": petObj.name}})
+        self.db_connection.profile_update({"id": id}, {"$set": {"currentPet": int(idToSwitch), "pet": pet_obj.name}})
         await ctx.send("Pet set!")
 
 
 def setup(client):
-    database_connection = databaseConnection()
-    client.add_cog(petCommands(client, database_connection))
+    client.add_cog(pet_commands(client, database_connection()))

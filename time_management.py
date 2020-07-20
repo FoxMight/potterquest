@@ -1,4 +1,4 @@
-from databaseConnection import databaseConnection
+from database_connection import database_connection
 from datetime import datetime, timedelta
 
 """
@@ -7,7 +7,7 @@ returns the total second difference
 """
 
 
-def compareTime(datetimeOld, datetimeNew):
+def compare_time(datetimeOld, datetimeNew):
     """
     Tells pycharm what types everything is:
 
@@ -66,10 +66,10 @@ Returns True on success
 """
 
 
-def storeDateTime(dbConnection, id, current):
+def store_date_time(dbConnection, id, current):
     """
     Tells pycharm what types everything is:
-    :type dbConnection: databaseConnection
+    :type dbConnection: database_connection
     :type current: datetime
     """
 
@@ -82,7 +82,7 @@ def storeDateTime(dbConnection, id, current):
         # current.minute + "\t" + current.second
 
         # split it into an array for storage
-        dbConnection.profileUpdate({"id": id}, {"$set": {"dailytime": toStore.split("\t")}})
+        dbConnection.profile_update({"id": id}, {"$set": {"dailytime": toStore.split("\t")}})
 
         return True
     except:
@@ -97,7 +97,7 @@ Returns True on success
 """
 
 
-def constructDateTime(user):
+def construct_date_time(user):
     # first parse the string, looking for tabs
     try:
         itemsToCreate = user["dailytime"]

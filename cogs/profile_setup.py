@@ -1,15 +1,15 @@
 import discord
 from discord.ext import commands
-from databaseConnection import databaseConnection
-from pets import readSpecificPetOutline, pet, updatePetDetails, savePet, generatePet
+from database_connection import database_connection
+from pets import readSpecificPetOutline, pet, updatePetDetails, savePet, generate_pet
 import copy
 
 
 class profileSetup(commands.Cog):
 
-    def __init__(self, client, databaseConnection):
+    def __init__(self, client, inner_database_connection):
         self.client = client
-        self.dbConnection = databaseConnection
+        self.database_connection = inner_database_connection
 
     #   A command all users must use in order to start their database profile up
     #   It is possible to force them to immediately choose a house, but I decided
@@ -18,7 +18,7 @@ class profileSetup(commands.Cog):
     async def start(self, ctx):
         id = ctx.author.id
 
-        profile = self.dbConnection.profileFind({"id": id})
+        profile = self.database_connection.profile_find({"id": id})
         if profile is not None:
             msg = 'You have already set your profile! You can not set it again.'
             await ctx.send(msg)
@@ -26,7 +26,7 @@ class profileSetup(commands.Cog):
 
         name = ctx.author.name
         # this initializes their profile and distinguishes it based on their discord id
-        self.dbConnection.profileInsert({"id": id, "coins": 0, "username": name,
+        self.database_connection.profile_insert({"id": id, "coins": 0, "username": name,
                                          "rank": "Regular", "petIDCount": -1, "currentPet": -1,
                                          "pets": []})
 
@@ -38,15 +38,15 @@ class profileSetup(commands.Cog):
     #   stored username to what it current is
     #   It will not save anything if the user is not yet initialized in the database
     @commands.command()
-    async def nameUpdate(self, ctx, *, userName):
+    async def name_update(self, ctx, *, userName):
         id = ctx.author.id
 
-        user = self.dbConnection.profileFind({"id": id})
+        user = self.database_connection.profile_find({"id": id})
         if user is None:
             msg = "You did not initialize your profile! Please initialize your profile."
         else:
             msg = "Username set!"
-            self.dbConnection.profileUpdate({"id": id}, {"$set": {"username": userName}})
+            self.database_connection.profile_update({"id": id}, {"$set": {"username": userName}})
 
         await ctx.send(msg)
 
@@ -56,7 +56,7 @@ class profileSetup(commands.Cog):
         # see whats in the message -> adjust the specific persons profile based  on it
         # .update "updates" the profile $ must be used to keep old items
         id = ctx.author.id
-        user = self.dbConnection.profileFind({"id": id})
+        user = self.database_connection.profile_find({"id": id})
         if user is None:
             msg = "You did not initialize your profile! Please initialize your profile."
         else:
@@ -73,26 +73,26 @@ class profileSetup(commands.Cog):
             except:
                 if 'gryffindor' in houseName:
                     petName = "Lion"
-                    generatePet(self.dbConnection, petName, user, id)
-                    self.dbConnection.profileUpdate({"id": id}, {"$set": {"house": "Gryffindor"}})
+                    generate_pet(self.database_connection, petName, user, id)
+                    self.database_connection.profile_update({"id": id}, {"$set": {"house": "Gryffindor"}})
                     msg = 'Welcome to the Gryffindor house!\nFor joining Gryffidor house you have received a Lion!'
 
                 elif 'hufflepuff' in houseName:
                     petName = "Honey Badger"
-                    generatePet(self.dbConnection, petName, user, id)
-                    self.dbConnection.profileUpdate({"id": id},
-                                                    {"$set": {"house": "Hufflepuff"}})
+                    generate_pet(self.database_connection, petName, user, id)
+                    self.database_connection.profile_update({"id": id},
+                                                            {"$set": {"house": "Hufflepuff"}})
                     msg = 'Welcome to the Hufflepuff house!\nFor joining the Hufflepuff house you have received a ' \
                           'Honey Badger! '
                 elif 'slytherin' in houseName:
                     petName = "Snake"
-                    generatePet(self.dbConnection, petName, user, id)
-                    self.dbConnection.profileUpdate({"id": id}, {"$set": {"house": "Slytherin"}})
+                    generate_pet(self.database_connection, petName, user, id)
+                    self.database_connection.profile_update({"id": id}, {"$set": {"house": "Slytherin"}})
                     msg = 'Welcome to the Slytherin house!\nFor joining the Slytherin house you have recieved a Snake!'
                 elif 'ravenclaw' in houseName:
                     petName = "Eagle"
-                    generatePet(self.dbConnection, petName, user, id)
-                    self.dbConnection.profileUpdate({"id": id}, {"$set": {"house": "Ravenclaw"}})
+                    generate_pet(self.database_connection, petName, user, id)
+                    self.database_connection.profile_update({"id": id}, {"$set": {"house": "Ravenclaw"}})
                     msg = 'Welcome to the Ravenclaw house!\nFor joining the Ravenclaw house you have recieved an Eagle!'
                 else:
                     msg = "That house doesn't exist."
@@ -104,7 +104,7 @@ class profileSetup(commands.Cog):
     async def profile(self, ctx):
         id = ctx.author.id
         name = ctx.author.name
-        user = self.dbConnection.profileFind({"id": id})
+        user = self.database_connection.profile_find({"id": id})
         if user is None:
             msg = "You did not initialize your profile! Please initialize your profile."
             await ctx.send(msg)
@@ -175,26 +175,27 @@ class profileSetup(commands.Cog):
     @commands.command()
     async def setpfp(self, ctx, *, picture):
         id = ctx.author.id
-        user = self.dbConnection.profileFind({"id": id})
+        user = self.database_connection.profile_find({"id": id})
         if user is None:
             msg = "You did not initialize your profile! Please initialize your profile."
         else:
             if "https" in picture:
-                self.dbConnection.profileUpdate({"id": id}, {"$set": {"picture": picture}})
+                self.database_connection.profile_update({"id": id}, {"$set": {"picture": picture}})
                 msg = 'Picture saved'
             else:
                 msg = 'Invalid picture format'
+
         await ctx.send(msg)
 
     @commands.command()
     async def birthday(self, ctx, *, birthday):
         # lets get the users birthday!
         id = ctx.author.id
-        user = self.dbConnection.profileFind({"id": id})
+        user = self.database_connection.profile_find({"id": id})
         if user is None:
             msg = "You did not initialize your profile! Please initialize your profile."
         else:
-            self.dbConnection.profileUpdate({"id": id}, {"$set": {"birthday": birthday}})
+            self.database_connection.profile_update({"id": id}, {"$set": {"birthday": birthday}})
             msg = 'Birthday saved'
         await ctx.send(msg)
 
@@ -202,7 +203,7 @@ class profileSetup(commands.Cog):
     async def knuts(self, ctx):
         # lets get the users coins!
         id = ctx.author.id
-        user = self.dbConnection.profileFind({"id": id})
+        user = self.database_connection.profile_find({"id": id})
         if user is None:
             msg = "You did not initialize your profile! Please initialize your profile."
         else:
@@ -211,5 +212,4 @@ class profileSetup(commands.Cog):
 
 
 def setup(client):
-    database_connection = databaseConnection()
-    client.add_cog(profileSetup(client, database_connection))
+    client.add_cog(profileSetup(client, database_connection()))

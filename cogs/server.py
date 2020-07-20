@@ -1,65 +1,65 @@
 import discord
 from discord.ext import commands
-from databaseConnection import databaseConnection
+from database_connection import database_connection
+
 
 class Server(commands.Cog):
 
-    def __init__(self, client, databaseConnection):
+    def __init__(self, client, inner_database_connection):
         self.client = client
-        self.dbConnection = databaseConnection
+        self.database_connection = inner_database_connection
 
     @commands.command()
     async def serverinfo(self, ctx):
         return
 
     @commands.command()
-    async def prefix(self, ctx, *, p = None):
+    async def prefix(self, ctx, *, p=None):
         id = ctx.guild.id
-        dbConnection = self.dbConnection
-        server = dbConnection.serverFind({'id': id})
+        server = self.database_connection.server_find({'id': id})
 
-        #if trying to change prefix
-        if (p is not None):
-            #if is server admin
-            if (ctx.guild.get_member(ctx.author.id).guild_permissions.administrator):
+        # if trying to change prefix
+        if p is not None:
+            # if is server admin
+            if ctx.guild.get_member(ctx.author.id).guild_permissions.administrator:
                 if server is None:
-                    dbConnection.serverInsert({'id': id, 'prefix': p})
+                    self.database_connection.server_insert({'id': id, 'prefix': p})
                 else:
-                    dbConnection.serverUpdate({'id': id}, {'$set': {'prefix': p}})
+                    self.database_connection.server_update({'id': id}, {'$set': {'prefix': p}})
 
                 embed = discord.Embed(
-                    color = discord.Color.gold(),
-                    title = 'Prefix Change',
-                    description = 'Server prefix set to `' + p + '`.'
+                    color=discord.Color.gold(),
+                    title='Prefix Change',
+                    description='Server prefix set to `' + p + '`.'
                 )
 
-                await ctx.send(embed = embed)
-            #not admin but trying to change prefix
+                await ctx.send(embed=embed)
+            # not admin but trying to change prefix
             else:
                 embed = discord.Embed(
-                    color = discord.Color.gold(),
-                    title = 'Prefix Change',
-                    description = 'Sorry, you have to be a server admin to do that!'
+                    color=discord.Color.gold(),
+                    title='Prefix Change',
+                    description='Sorry, you have to be a server admin to do that!'
                 )
 
-                await ctx.send(embed = embed)
-        #prompt & say prefix
+                await ctx.send(embed=embed)
+        # prompt & say prefix
         else:
             if server is None:
-                dbConnection.serverInsert({'id': id, 'prefix': '+'})
-                server = dbConnection.serverFind({'id': id})
+                self.database_connection.server_insert({'id': id, 'prefix': '+'})
+                server = self.database_connection.server_find({'id': id})
 
             p = server['prefix']
 
             embed = discord.Embed(
-                color = discord.Color.gold(),
-                title = 'Prefix',
-                description = 'Server prefix is `' + p + '`.\nTo change your server prefix, use `+prefix <prefix>`.'
+                color=discord.Color.gold(),
+                title='Prefix',
+                description='Server prefix is `' + p + '`.\nTo change your server prefix, use `+prefix <prefix>`.'
             )
 
-            await ctx.send(embed = embed)
+            await ctx.send(embed=embed)
+
 
 def setup(client):
-    database_connection = databaseConnection()
-    client.add_cog(Server(client, database_connection))
+    client.add_cog(Server(client, database_connection()))
     return
