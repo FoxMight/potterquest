@@ -1,5 +1,5 @@
 from database_connection import database_connection
-from pets import pet, read_user_pet
+from pets import Pet, read_user_pet
 import discord
 from discord.ext import commands
 

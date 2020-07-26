@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from pets import pet, readPetOutline, savePet, updatePetDetails
+from pets import Pet, read_pet_outline, save_pet, update_pet_details
 from databaseConnection import databaseConnection
 import copy
 

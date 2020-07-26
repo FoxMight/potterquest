@@ -6,7 +6,15 @@ from .currency import give_money
 
 # a general ownerAdminTest any cog should be able to use as long
 # as they have a database connection
-def owner_admin_test(ctx, db_connection):
+def owner_admin_test(ctx, db_connection) -> bool:
+    """
+    Checks if the author of the current message context has admin rights in the databse
+    ownership rights in this server
+
+    :param ctx: The context
+    :param db_connection: The database connection
+    :return:
+    """
     id = ctx.author.id
 
     # they are an admin of the server, let them pass
@@ -21,19 +29,19 @@ def owner_admin_test(ctx, db_connection):
 Takes in a discord member
 Returns if they are an administrator of the current server or not
 '''
-
-
-def owner_test(member):
+def owner_test(member: discord.Member) -> bool:
+    """
+    :param member: The discord member to to check if they have ownership rights in their server
+    :return: Whether or not they have admin rights
+    """
     return member.guild_permissions.administrator
 
 
-'''
-Takes in a user from the database
-Returns if they are a bot administrator or not
-'''
-
-
-def admin_test(user):
+def admin_test(user) -> bool:
+    """
+    :param user: A dictionary containing the users information
+    :return: Whether or not they have admin privileges in the bot
+    """
     if user is None:
         return False
     try:
@@ -170,7 +178,7 @@ class management(commands.Cog):
             else:
                 self.db_connection.profile_update({"id": user.id}, {"$set": {"rank": "Admin"}})
                 await ctx.send("Successfully made them an Admin.")
-                pass
+                return
 
 
 def setup(client):

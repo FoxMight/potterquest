@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from database_connection import database_connection
-from pets import readSpecificPetOutline, pet, updatePetDetails, savePet, generate_pet
+from pets import read_specific_pet_outline, Pet, update_pet_details, save_pet, generate_pet
 import copy
 
 

@@ -7,57 +7,57 @@ returns the total second difference
 """
 
 
-def compare_time(datetimeOld, datetimeNew):
+def compare_time(datetime_old, datetime_new):
     """
     Tells pycharm what types everything is:
 
-    :type datetimeOld: datetime
-    :type datetimeNew: datetime
+    :type datetime_old: datetime
+    :type datetime_new: datetime
     """
 
     # convert years to days
-    dayTotal = datetimeOld.year * 365 + calculateDaysUpToMonth(datetimeOld.month)
-    oldTime = timedelta(days=(dayTotal + datetimeOld.day), hours=datetimeOld.hour, minutes=datetimeOld.minute,
-                        seconds=datetimeOld.second).total_seconds()
+    dayTotal = datetime_old.year * 365 + calculate_days_up_to_month(datetime_old.month)
+    oldTime = timedelta(days=(dayTotal + datetime_old.day), hours=datetime_old.hour, minutes=datetime_old.minute,
+                        seconds=datetime_old.second).total_seconds()
 
-    dayTotal = datetimeNew.year * 365+ calculateDaysUpToMonth(datetimeNew.month)
-    newTime = timedelta(days=(dayTotal + datetimeNew.day), hours=datetimeNew.hour, minutes=datetimeNew.minute,
-                        seconds=datetimeNew.second).total_seconds()
+    dayTotal = datetime_new.year * 365 + calculate_days_up_to_month(datetime_new.month)
+    newTime = timedelta(days=(dayTotal + datetime_new.day), hours=datetime_new.hour, minutes=datetime_new.minute,
+                        seconds=datetime_new.second).total_seconds()
 
     timeDifference = newTime - oldTime
 
     return timeDifference
 
 
-def calculateDaysUpToMonth(num):
-    totalDays = 0
+def calculate_days_up_to_month(num):
+    total_days = 0
     if num > 1:
-        totalDays += 31
+        total_days += 31
 
     # does not account for leap years yet,
     # needs to be implemented differently
     if num > 2:
-        totalDays += 28
+        total_days += 28
 
     if num > 3:
-        totalDays += 31
+        total_days += 31
     if num > 4:
-        totalDays += 30
+        total_days += 30
     if num > 5:
-        totalDays += 31
+        total_days += 31
     if num > 6:
-        totalDays += 30
+        total_days += 30
     if num > 7:
-        totalDays += 31
+        total_days += 31
     if num > 8:
-        totalDays += 31
+        total_days += 31
     if num > 9:
-        totalDays += 30
+        total_days += 30
     if num > 10:
-        totalDays += 31
+        total_days += 31
     if num > 11:
-        totalDays += 30
-    return totalDays
+        total_days += 30
+    return total_days
 
 """
 Stores a date time object in the database

@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from pets import pet, readPetOutline, savePet, updatePetDetails
+from pets import Pet, read_pet_outline, save_pet, update_pet_details
 from database_connection import database_connection
 import copy
 
@@ -10,7 +10,7 @@ class shop_commands(commands.Cog):
     def __init__(self, client, inner_database_connection):
         self.client = client
         self.database_connection = inner_database_connection
-        self.pets = readPetOutline(inner_database_connection)
+        self.pets = read_pet_outline(inner_database_connection)
         # Debugging code to check what pets got loaded in:
         # for petObj in self.pets.values():
         #     print(petObj.type)
@@ -65,9 +65,9 @@ class shop_commands(commands.Cog):
             # we already have a pet outline for the pet
             # and the userid, we just need to give the pet outline copy
             users_pet = copy.copy(pet_obj)
-            updatePetDetails(self.database_connection, user_doc, userID, users_pet)
+            update_pet_details(self.database_connection, user_doc, userID, users_pet)
             # save the pet
-            savePet(self.database_connection, users_pet)
+            save_pet(self.database_connection, users_pet)
 
             # letters in vowel as a list
             vowels = ["a", "e", "i", "o", "u"]

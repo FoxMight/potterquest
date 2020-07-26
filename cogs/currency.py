@@ -1,3 +1,5 @@
+from typing import Any
+
 import discord
 from discord.ext import commands
 from datetime import datetime, timedelta
@@ -14,24 +16,24 @@ class currency(commands.Cog):
     @commands.command()
     async def daily(self, ctx):
         id = ctx.author.id
-        currentTime = datetime.now()
+        current_time: datetime = datetime.now()
         user = self.db_connection.profile_find({"id": id})
 
         # check the users time
         try:
             # test the time difference
-            oldTime = construct_date_time(user)
-            if oldTime is None:
+            previous_time = construct_date_time(user)
+            if previous_time is None:
                 raise Exception("Error constructing date time.")
 
-            timeDiff = compare_time(oldTime, currentTime)
+            time_diff = compare_time(previous_time, current_time)
 
             # if it has been 24 hours
-            if timeDiff < 86400:
+            if time_diff < 86400:
                 # convert time to wait into a minute hour format
-                timeToWait = 86400 - timeDiff
+                time_to_wait = 86400 - time_diff
 
-                m, s = divmod(timeToWait, 60)
+                m, s = divmod(time_to_wait, 60)
                 h, m = divmod(m, 60)
 
                 msg = "Please wait "
@@ -45,15 +47,15 @@ class currency(commands.Cog):
                 await ctx.send(msg)
                 return
             else:
-                return await self.give_daily(ctx, currentTime, id)
+                return await self.give_daily(ctx, current_time, id)
 
-        except:
+        except Exception as e:
             # this is their first time! give them the money
-            return await self.give_daily(ctx, currentTime, id)
+            return await self.give_daily(ctx, current_time, id)
 
     # function to give them the daily coins if their profile has been set up
-    async def give_daily(self, ctx, currentTime, id):
-        if not store_date_time(self.db_connection, id, currentTime):
+    async def give_daily(self, ctx, current_time, id):
+        if not store_date_time(self.db_connection, id, current_time):
             msg = "Please set up your profile first!"
             await ctx.send(msg)
             return
@@ -66,20 +68,19 @@ class currency(commands.Cog):
         return
 
 
-def setup(client):
-    client.add_cog(currency(client, database_connection()))
-    return
-
-
-def give_money(db_connection, id, amount):
+def give_money(db_connection: database_connection, id, amount: int) -> bool:
     if amount < 0:
         return False
-
     try:
         user = db_connection.profile_find({"id": id})
-        userAmount = user["coins"]
-        userAmount += amount
-        db_connection.profile_update({"id": id}, {"$set": {"coins": userAmount}})
+        user_amount = user["coins"]
+        user_amount += amount
+        db_connection.profile_update({"id": id}, {"$set": {"coins": user_amount}})
         return True
     except Exception as e:
         return False
+
+
+def setup(client):
+    client.add_cog(currency(client, database_connection()))
+    return

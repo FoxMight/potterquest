@@ -1,3 +1,5 @@
+from typing import Any
+
 import discord
 import sys
 import signal
@@ -13,18 +15,24 @@ from cogs.management import owner_admin_test
 from database_connection import database_connection
 
 # initializing the database
-dbConnection = database_connection()
+global_db_connection: database_connection = database_connection()
 
 
 def prefix(bot, ctx):
-    global dbConnection
+    """
+    :param bot: Our bot instance
+    :param ctx: The context
+    :return:
+    """
+
+    global global_db_connection
 
     id = ctx.guild.id
-    server = dbConnection.server_find({'id': id})
+    server = global_db_connection.server_find({'id': id})
 
     if server is None:
-        dbConnection.serverInsert({'id': id, 'prefix': 'fox '})
-        server = dbConnection.serverFind({'id': id})
+        global_db_connection.server_insert({'id': id, 'prefix': 'fox '})
+        server = global_db_connection.server_find({'id': id})
 
     p = server['prefix']
     return p
@@ -61,7 +69,7 @@ async def help(ctx):
 
 @client.command()
 async def load(ctx, extension):
-    result = owner_admin_test(ctx, dbConnection)
+    result = owner_admin_test(ctx, global_db_connection)
 
     if result is False:
         msg = "You do not have permission to load commands!"
@@ -81,7 +89,7 @@ async def load(ctx, extension):
 
 @client.command()
 async def unload(ctx, extension):
-    result = owner_admin_test(ctx, dbConnection)
+    result: bool = owner_admin_test(ctx, global_db_connection)
     if result is False:
         msg = "You do not have permission to load commands!"
         await ctx.send(msg)
@@ -97,23 +105,6 @@ async def unload(ctx, extension):
         await ctx.send(msg)
         return
 
-
-"""
-    Old fun commands that need to be re-implemented
-    if message.content.startswith('+cheese'):
-        id = message.author.id
-        if(id == '93121870949281792'):
-            msg = "GIMME MY DAMN CHEESE"
-            await client.send_message(message.channel, msg)
-
-    if message.content.startswith('+ariana'):
-        #will have to change
-        id = message.author.id
-        if(id == '110586016921862144'):
-            with open ('D:\\OneDrive\\CS_Projects\\Potterquest\\image2.jpg', 'rb') as picture:
-                 await client.send_file(message.channel, picture)
-
-"""
 
 
 @client.event
